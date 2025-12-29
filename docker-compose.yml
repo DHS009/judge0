@@ -8,6 +8,7 @@ x-logging:
 services:
   server:
     image: judge0/judge0:latest
+    platform: linux/amd64
     volumes:
       - ./judge0.conf:/judge0.conf:ro
     ports:
@@ -18,6 +19,7 @@ services:
 
   worker:
     image: judge0/judge0:latest
+    platform: linux/amd64
     command: ["./scripts/workers"]
     volumes:
       - ./judge0.conf:/judge0.conf:ro
@@ -27,6 +29,9 @@ services:
 
   db:
     image: postgres:16.2
+    platform: linux/amd64
+    environment:
+      - POSTGRES_PASSWORD=judge0pass
     env_file: judge0.conf
     volumes:
       - data:/var/lib/postgresql/data/
@@ -35,9 +40,10 @@ services:
 
   redis:
     image: redis:7.2.4
+    platform: linux/amd64
     command: [
       "bash", "-c",
-      'docker-entrypoint.sh --appendonly no --requirepass "$$REDIS_PASSWORD"'
+      'docker-entrypoint.sh --appendonly no'
     ]
     env_file: judge0.conf
     <<: *default-logging
